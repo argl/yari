@@ -1,4 +1,4 @@
-const KS_RE = /{{([^}]*)}}/g;
+const KS_RE = /{{((:?.|\n)*?)}}/gm;
 
 export function encodeKS(raw) {
   return raw.replace(

@@ -1,46 +1,23 @@
-import { unified } from "unified";
-import parse from "remark-parse";
-import remarkRehype from "remark-rehype";
-import stringify from "rehype-stringify";
-import gfm from "remark-gfm";
-import raw from "rehype-raw";
-import format from "rehype-format";
+import {
+  m2h as m2hMarkdownIt,
+  m2hSync as m2hSyncMarkdownIt,
+} from "./markdown-it.js";
+import { m2h as m2hUnified, m2hSync as m2hSyncUnified } from "./unified.js";
 
-import { buildLocalizedHandlers } from "./handlers/index.js";
-import { decodeKS, encodeKS } from "../utils/index.js";
-
-interface ProcessorOptions {
+export interface ProcessorOptions {
   locale?: string;
 }
 
-function makeProcessor(options: ProcessorOptions) {
-  const localizedHandlers = buildLocalizedHandlers(options.locale);
-  const processor = unified()
-    .use(parse)
-    .use(gfm)
-    .use(remarkRehype, {
-      handlers: localizedHandlers,
-      allowDangerousHtml: true,
-    })
-    .use(raw)
-    .use(stringify, { allowDangerousHtml: true })
-    .use(format);
-
-  return processor;
-}
-
 export async function m2h(md: string, options: ProcessorOptions) {
-  const ksEncoded = encodeKS(md);
-  const processor = makeProcessor(options);
-
-  const file = await processor.process(ksEncoded);
-  return decodeKS(String(file));
+  if (process.env.USE_MARKDOWN_IT) {
+    return await m2hMarkdownIt(md, {});
+  }
+  return await m2hUnified(md, options);
 }
 
 export function m2hSync(md: string, options: ProcessorOptions) {
-  const ksEncoded = encodeKS(md);
-  const processor = makeProcessor(options);
-
-  const file = processor.processSync(ksEncoded);
-  return decodeKS(String(file));
+  if (process.env.USE_MARKDOWN_IT) {
+    return m2hSyncMarkdownIt(md, {});
+  }
+  return m2hSyncUnified(md, options);
 }
