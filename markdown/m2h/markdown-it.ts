@@ -271,7 +271,7 @@ function customProcessor(locale: string) {
     const notecardOpenRenderer = function (tokens: Token[], idx: number) {
       const notecardType = tokens[idx].attrGet("notecardType");
       const classNames =
-        notecardType === "callout" ? ["callout"] : [notecardType, "notecard"];
+        notecardType === "callout" ? ["callout"] : ["notecard", notecardType];
       return `<div class="${classNames.join(" ")}">\n`;
     };
     const notecardCloseRenderer = function (/*tokens: Token[], idx: number*/) {
@@ -284,4 +284,43 @@ function customProcessor(locale: string) {
     md.renderer.rules.notecard_close = notecardCloseRenderer;
     md.renderer.rules.noop = noopRenderer;
   };
+}
+
+import Diff from "diff";
+import chalk from "chalk";
+
+export function compareOutputs(truthDirectory: string, testDirectory: string) {
+  const truthFiles = fs.readdirSync(truthDirectory, {
+    recursive: true,
+    withFileTypes: true,
+  });
+  const testFiles = fs.readdirSync(testDirectory, {
+    recursive: true,
+    withFileTypes: true,
+  });
+  for (const file of truthFiles) {
+    if (file.isFile() && file.name.endsWith(".html")) {
+      const truth = fs.readFileSync(
+        path.join(truthDirectory, file.path),
+        "utf-8"
+      );
+      const test = fs.readFileSync(
+        path.join(testDirectory, file.path),
+        "utf-8"
+      );
+      const diff = Diff.diffTrimmedLines(truth, test);
+      diff.forEach((part) => {
+        // green for additions, red for deletions
+        console.log(
+          `${
+            part.added
+              ? chalk.green(part.value)
+              : part.removed
+                ? chalk.red(part.value)
+                : chalk.grey(part.value)
+          }`
+        );
+      });
+    }
+  }
 }
