@@ -55,7 +55,7 @@ function tryOrExit(f: ({ options, ...args }) => Promise<void>) {
     try {
       await f({ options, ...args });
     } catch (error) {
-      if (error instanceof Error && (options.verbose || options.v)) {
+      if (error instanceof Error) {
         console.error(chalk.red(error.stack));
       }
       throw error;
