@@ -182,6 +182,8 @@ const config = {
   ],
   experiments: {
     outputModule: true,
+    syncWebAssembly: true,
+    asyncWebAssembly: true,
   },
 };
 

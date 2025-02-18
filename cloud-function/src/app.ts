@@ -25,6 +25,7 @@ import { stripForwardedHostHeaders } from "./middlewares/stripForwardedHostHeade
 import { proxyPong } from "./handlers/proxy-pong.js";
 import { handleRunner } from "./internal/play/index.js";
 import { proxyContentAssets } from "./handlers/proxy-content-assets.js";
+import { proxySharedAssets } from "./handlers/proxy-shared-assets.js";
 
 const router = Router();
 router.use(cookieParser());
@@ -51,6 +52,12 @@ router.get(
   ["/[^/]+/docs/*/runner.html", "/[^/]+/blog/*/runner.html", "/runner.html"],
   requireOrigin(Origin.play),
   handleRunner
+);
+// Interactive example assets
+router.get(
+  "/shared-assets/*",
+  requireOrigin(Origin.play, Origin.main),
+  proxySharedAssets
 );
 // Assets.
 router.get(

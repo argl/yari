@@ -6,6 +6,7 @@ import { PlayConsole } from "./play/console";
 import { PlayController } from "./play/controller";
 import { PlayEditor } from "./play/editor";
 import { PlayRunner } from "./play/runner";
+import { TabPanel, TabTab, TabWrapper } from "./interactive-example/tabs";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -18,6 +19,9 @@ declare global {
     "play-controller": PlayController;
     "play-editor": PlayEditor;
     "play-runner": PlayRunner;
+    "tab-panel": TabPanel;
+    "tab-tab": TabTab;
+    "tab-wrapper": TabWrapper;
   }
 
   interface WindowEventMap {
