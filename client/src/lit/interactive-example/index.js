@@ -25,13 +25,11 @@ import exampleStyle from "./example.css?raw";
  * @param {string} wat
  * @returns {Promise<string>} a data-url with the compiled wasm, base64 encoded
  */
-async function compileWat(wat) {
+async function compileAndEncodeWat(wat) {
   await init();
   const binary = watify(wat);
   const b64 = `data:application/wasm;base64,${binary.toBase64()}`;
   return b64;
-  // const blob = new Blob([binary], { type: "application/wasm" });
-  // return blob;
 }
 
 export class InteractiveExample extends GleanMixin(LitElement) {
@@ -102,7 +100,7 @@ window.addEventListener("message", ({ data }) => {
 });
 console.log("hello!");
 `;
-      compileWat(code.wat).then((watUrl) => {
+      compileAndEncodeWat(code.wat).then((watUrl) => {
         console.log("compiled", watUrl);
 
         window.addEventListener("message", ({ data: { typ } }) => {
@@ -116,7 +114,6 @@ console.log("hello!");
             );
           }
         });
-        // this._run()
       });
     }
     return code;
@@ -151,21 +148,6 @@ console.log("hello!");
     this._gleanClick(`interactive-examples-lit: ${action}`);
   }
 
-  /** @param {Blob} blob */
-  async convert2DataUrl(blob) {
-    let reader = new FileReader();
-    reader.readAsDataURL(blob);
-    reader.onload = function () {
-      console.log("DATA URL", reader.result);
-    };
-    // await new Promise(
-    //   (resolve) =>
-    //     (reader.onload = function () {
-    //       console.log(reader.result);
-    //     })
-    // );
-    reader.readAsDataURL(blob);
-  }
   connectedCallback() {
     super.connectedCallback();
     this._telemetryHandler = this._telemetryHandler.bind(this);
